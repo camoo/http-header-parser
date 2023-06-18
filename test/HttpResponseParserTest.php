@@ -39,7 +39,7 @@ RAW;
         $this->assertEquals($parser->get('Date'), 'Tue, 12 Apr 2016 13:58:01 GMT');
         $this->assertEquals($parser->get('Server'), 'Apache/2.2.14 (Ubuntu)');
         $this->assertEquals($parser->get('X-Powered-By'), 'PHP/5.3.14 ZendServer/5.0');
-        $this->assertEquals($parser->get('Set-Cookie'), 'ZDEDebuggerPresent=php,phtml,php3; path=/__header__PHPSESSID=6sf8fa8rlm8c44avk33hhcegt0; path=/; HttpOnly');
+        $this->assertEquals($parser->get('Set-Cookie'), "ZDEDebuggerPresent=php,phtml,php3; path=/\nPHPSESSID=6sf8fa8rlm8c44avk33hhcegt0; path=/; HttpOnly");
         $this->assertEquals($parser->get('Expires'), 'Thu, 19 Nov 1981 08:52:00 GMT');
         $this->assertEquals($parser->get('Cache-Control'), 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
         $this->assertEquals($parser->get('Pragma'), 'no-cache');
