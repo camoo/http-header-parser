@@ -1,5 +1,5 @@
 {
-    "name": "bfunky/http-parser",
+    "name": "camoo/http-header-parser",
     "type": "library",
     "description": "A library to parse HTTP headers and HTTP header fields",
     "keywords": ["http", "parser", "http parser", "http fields", "http request", "http response"],
