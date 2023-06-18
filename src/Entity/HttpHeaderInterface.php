@@ -10,5 +10,4 @@ namespace BFunky\HttpParser\Entity;
 
 interface HttpHeaderInterface
 {
-
 }

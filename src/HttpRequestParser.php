@@ -12,9 +12,7 @@ use BFunky\HttpParser\Entity\HttpRequestHeader;
 
 class HttpRequestParser extends AbstractHttpParser
 {
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     protected function setHttpHeader(string $method, string $path, string $protocol): void
     {
         $this->httpHeader = new HttpRequestHeader($method, $path, $protocol);

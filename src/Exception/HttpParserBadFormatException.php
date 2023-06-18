@@ -10,14 +10,10 @@ namespace BFunky\HttpParser\Exception;
 
 class HttpParserBadFormatException extends AbstractHttpParserException
 {
-    /**
-     * @var string
-     */
-    const MESSAGE = 'Bad format on raw data';
+    /** @var string */
+    public const MESSAGE = 'Bad format on raw data';
 
-    /**
-     * HttpParserBadFormatException constructor.
-     */
+    /** HttpParserBadFormatException constructor. */
     public function __construct()
     {
         $this->message = self::MESSAGE;

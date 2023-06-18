@@ -1,9 +1,6 @@
 <?php
 /**
- * Author: Jairo Rodríguez <jairo@bfunky.net>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Author: jairo.rodriguez <jairo@bfunky.net>
  */
 
 namespace BFunky\HttpParser\Entity;
@@ -12,13 +9,12 @@ use BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection;
 
 class HttpFieldCollection
 {
-    /**
-     * @var HttpField[]
-     */
+    /** @var HttpField[] */
     protected $httpFields;
 
     /**
      * HttpFieldCollection constructor.
+     *
      * @param HttpField[] $httpFields
      */
     public function __construct(array $httpFields = [])
@@ -29,16 +25,22 @@ class HttpFieldCollection
         }
     }
 
-    /**
-     * @param HttpField $obj
-     */
     public function add(HttpField $obj): void
     {
+        if (array_key_exists($obj->getName(), $this->httpFields)) {
+            if (!is_array($this->httpFields[$obj->getName()])) {
+                $firstValue = $this->httpFields[$obj->getName()];
+                $this->httpFields[$obj->getName()] = [];
+                $this->httpFields[$obj->getName()][] = $firstValue;
+            }
+            $this->httpFields[$obj->getName()][] = $obj;
+
+            return;
+        }
         $this->httpFields[$obj->getName()] = $obj;
     }
 
     /**
-     * @param string $key
      * @throws HttpFieldNotFoundOnCollection
      */
     public function delete(string $key): void
@@ -48,18 +50,21 @@ class HttpFieldCollection
     }
 
     /**
-     * @param string $key
-     * @return HttpField
      * @throws HttpFieldNotFoundOnCollection
      */
-    public function get(string $key): HttpField
+    public function get(string $key): HttpField|array
     {
         $this->checkKeyExists($key);
+
         return $this->httpFields[$key];
     }
 
+    public static function fromHttpFieldArray(array $httpFields): self
+    {
+        return new self($httpFields);
+    }
+
     /**
-     * @param $key
      * @throws HttpFieldNotFoundOnCollection
      */
     private function checkKeyExists($key): void
@@ -67,14 +72,5 @@ class HttpFieldCollection
         if (!array_key_exists($key, $this->httpFields)) {
             throw new  HttpFieldNotFoundOnCollection('Field ' . $key . ' not found');
         }
-    }
-
-    /**
-     * @param array $httpFields
-     * @return self
-     */
-    public static function fromHttpFieldArray(array $httpFields): self
-    {
-        return new self($httpFields);
     }
 }

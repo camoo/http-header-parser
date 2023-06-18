@@ -1,6 +1,4 @@
 - Handle forwarding headers HTTP/1.1 100 Continue
-- Handle duplicated http fields eg. Set-Cookie: ZDEDebuggerPresent=php,phtml,php3; path=/
-- Parsing on json and associative array
 - Use get method to return header values too
 - 100% coverage
 - Mutant testing

@@ -10,5 +10,4 @@ namespace BFunky\HttpParser\Exception;
 
 class HttpFieldNotFoundOnCollection extends AbstractHttpParserException
 {
-
 }

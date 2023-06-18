@@ -1,9 +1,6 @@
 <?php
 /**
- * Author: Jairo Rodríguez <jairo@bfunky.net>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Author: jairo.rodriguez <jairo@bfunky.net>
  */
 
 namespace BFunky\HttpParser;
@@ -17,59 +14,51 @@ use BFunky\HttpParser\Exception\HttpParserBadFormatException;
 
 abstract class AbstractHttpParser implements HttpParserInterface
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $httpRaw;
 
-    /**
-     * @var HttpHeaderInterface
-     */
+    /** @var HttpHeaderInterface */
     protected $httpHeader;
 
-    /**
-     * @var HttpFieldCollection
-     */
+    /** @var HttpFieldCollection */
     protected $httpFieldCollection;
 
     /**
      * HttpParser constructor.
+     *
      * @param HttpFieldCollection $httpFieldCollection
      */
-    public function __construct(HttpFieldCollection $httpFieldCollection = null)
+    public function __construct(?HttpFieldCollection $httpFieldCollection = null)
     {
         $this->httpFieldCollection = $httpFieldCollection ?? HttpFieldCollection::fromHttpFieldArray([]);
     }
 
-    /**
-     * @param string $rawHttp
-     */
     public function parse(string $rawHttp): void
     {
         $this->process($rawHttp);
     }
 
     /**
-     * @param string $headerFieldName
-     * @return string
      * @throws HttpFieldNotFoundOnCollection
      */
     public function get(string $headerFieldName): string
     {
         $httpField = $this->httpFieldCollection->get($headerFieldName);
+        if (is_array($httpField)) {
+            $values = array_map(fn (HttpField $line): string => trim($line->getValue()), $httpField);
+
+            return implode('__header__', $values);
+        }
+
         return $httpField->getValue();
     }
 
-    /**
-     * @return HttpHeaderInterface
-     */
     public function getHeader(): HttpHeaderInterface
     {
         return $this->httpHeader;
     }
 
     /**
-     * @param string $rawHttp
      * @throws HttpParserBadFormatException
      */
     protected function process(string $rawHttp): void
@@ -80,6 +69,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
 
     /**
      * Split the http string
+     *
      * @throws HttpParserBadFormatException
      */
     protected function extract(): void
@@ -98,7 +88,6 @@ abstract class AbstractHttpParser implements HttpParserInterface
     }
 
     /**
-     * @param string $headerLine
      * @throws HttpParserBadFormatException
      */
     protected function addHeader(string $headerLine): void
@@ -109,26 +98,14 @@ abstract class AbstractHttpParser implements HttpParserInterface
         $this->setHttpHeader($data[0], $data[1], $data[2]);
     }
 
-    /**
-     * @param string $headerLine
-     */
     protected function addField(string $headerLine): void
     {
-        list($fieldKey, $fieldValue) = $this->splitRawLine($headerLine);
+        [$fieldKey, $fieldValue] = $this->splitRawLine($headerLine);
         $this->httpFieldCollection->add(HttpField::fromKeyAndValue($fieldKey, $fieldValue));
     }
 
-    /**
-     * @param string $method
-     * @param string $path
-     * @param string $protocol
-     */
     abstract protected function setHttpHeader(string $method, string $path, string $protocol): void;
 
-    /**
-     * @param string $line
-     * @return array
-     */
     protected function splitRawLine(string $line): array
     {
         $parts = [];
@@ -139,16 +116,14 @@ abstract class AbstractHttpParser implements HttpParserInterface
                 $parts = explode(':', $line);
             }
         }
+
         return $parts;
     }
 
-    /**
-     * @param string $httpRaw
-     * @return HttpParserInterface
-     */
     protected function setHttpRaw(string $httpRaw): HttpParserInterface
     {
         $this->httpRaw = $httpRaw;
+
         return $this;
     }
 }
