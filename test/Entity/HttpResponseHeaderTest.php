@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 class HttpResponseHeaderTest extends TestCase
 {
-
     public function testGetters()
     {
         $field = new HttpResponseHeader('a protocol', 'a code', 'a message');

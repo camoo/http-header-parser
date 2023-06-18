@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 class HttpRequestHeaderTest extends TestCase
 {
-
     public function testGetters()
     {
         $field = new HttpRequestHeader('a method', 'a path', 'a protocol');

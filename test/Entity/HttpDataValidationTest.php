@@ -8,10 +8,9 @@
 
 namespace BFunky\Test\HttpParser\Entity;
 
-
 use BFunky\HttpParser\Entity\HttpDataValidation;
+use BFunky\HttpParser\Exception\HttpParserBadFormatException;
 use PHPUnit\Framework\TestCase;
-use \BFunky\HttpParser\Exception\HttpParserBadFormatException;
 
 class HttpDataValidationTest extends TestCase
 {

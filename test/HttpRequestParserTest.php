@@ -9,6 +9,7 @@
 namespace BFunky\Test\HttpParser;
 
 use BFunky\HttpParser\Entity\HttpRequestHeader;
+use BFunky\HttpParser\Exception\HttpParserBadFormatException;
 use BFunky\HttpParser\HttpRequestParser;
 use PHPUnit\Framework\TestCase;
 
@@ -46,13 +47,9 @@ RAW;
         $this->assertEquals($entityHeader->getProtocol(), 'HTTP/1.1');
     }
 
-
-
-    /**
-     * @expectedException \BFunky\HttpParser\Exception\HttpParserBadFormatException
-     */
     public function testThrownExceptionIfWrongRawData()
     {
+        $this->expectException(HttpParserBadFormatException::class);
         $parser = new HttpRequestParser();
         $raw = <<<RAW
 POST /path

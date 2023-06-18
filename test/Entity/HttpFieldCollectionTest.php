@@ -8,9 +8,9 @@
 
 namespace BFunky\Test\HttpParser\Entity;
 
-
 use BFunky\HttpParser\Entity\HttpField;
 use BFunky\HttpParser\Entity\HttpFieldCollection;
+use BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection;
 use PHPUnit\Framework\TestCase;
 
 class HttpFieldCollectionTest extends TestCase
@@ -30,35 +30,31 @@ class HttpFieldCollectionTest extends TestCase
         $this->assertEquals('value', $element->getValue());
     }
 
-    /**
-     * @expectedException \BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection
-     */
-    public function testDeleteElement(){
+    public function testDeleteElement()
+    {
+        $this->expectException(HttpFieldNotFoundOnCollection::class);
         $collection = new HttpFieldCollection([HttpField::fromKeyAndValue('key', 'value')]);
         $collection->delete('key');
         $collection->get('key');
     }
 
-    public function testNamedConstructorFromHttpFieldArray(){
-        $collection =  HttpFieldCollection::fromHttpFieldArray([HttpField::fromKeyAndValue('key', 'value')]);
+    public function testNamedConstructorFromHttpFieldArray()
+    {
+        $collection = HttpFieldCollection::fromHttpFieldArray([HttpField::fromKeyAndValue('key', 'value')]);
         $element = $collection->get('key');
         $this->assertEquals('value', $element->getValue());
     }
 
-    /**
-     * @expectedException \BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection
-     */
     public function testGetMethodReturnsErrorIfElementDoesNotExists()
     {
+        $this->expectException(HttpFieldNotFoundOnCollection::class);
         $collection = new HttpFieldCollection();
         $collection->get('key');
     }
 
-    /**
-     * @expectedException \BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection
-     */
     public function testDeleteMethodReturnsErrorIfElementDoesNotExists()
     {
+        $this->expectException(HttpFieldNotFoundOnCollection::class);
         $collection = new HttpFieldCollection();
         $collection->delete('key');
     }
