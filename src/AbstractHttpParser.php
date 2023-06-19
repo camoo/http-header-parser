@@ -14,28 +14,21 @@ use BFunky\HttpParser\Exception\HttpParserBadFormatException;
 
 abstract class AbstractHttpParser implements HttpParserInterface
 {
-    /** @var string */
-    protected $httpRaw;
+    protected string $httpRaw;
 
-    /** @var HttpHeaderInterface */
-    protected $httpHeader;
+    protected HttpHeaderInterface $httpHeader;
 
-    /** @var HttpFieldCollection */
-    protected $httpFieldCollection;
+    protected HttpFieldCollection $httpFieldCollection;
 
-    /**
-     * HttpParser constructor.
-     *
-     * @param HttpFieldCollection $httpFieldCollection
-     */
+    /** HttpParser constructor. */
     public function __construct(?HttpFieldCollection $httpFieldCollection = null)
     {
         $this->httpFieldCollection = $httpFieldCollection ?? HttpFieldCollection::fromHttpFieldArray([]);
     }
 
-    public function parse(string $rawHttp): void
+    public function parse(string $rawHttpHeader): void
     {
-        $this->process($rawHttp);
+        $this->process($rawHttpHeader);
     }
 
     /** @throws HttpFieldNotFoundOnCollection */
@@ -71,7 +64,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
     protected function extract(): void
     {
         $headers = explode("\n", $this->httpRaw);
-        foreach ($headers as $i => $headerLine) {
+        foreach ($headers as $headerLine) {
             if (trim($headerLine) === '') {
                 continue;
             }
@@ -86,7 +79,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
     /** @throws HttpParserBadFormatException */
     protected function addHeader(string $headerLine): void
     {
-        $data = preg_split('/ /', $headerLine);
+        $data = explode(' ', $headerLine);
         $data = array_merge($data, ['', '', '']);
         HttpDataValidation::checkHeaderOrRaiseError($data[0], $data[1], $data[2]);
         $this->setHttpHeader($data[0], $data[1], $data[2]);
@@ -103,10 +96,10 @@ abstract class AbstractHttpParser implements HttpParserInterface
     protected function splitRawLine(string $line): array
     {
         $parts = [];
-        if (strpos($line, ': ') !== false) {
+        if (str_contains($line, ': ')) {
             $parts = explode(': ', $line);
         } else {
-            if (strpos($line, ':') !== false) {
+            if (str_contains($line, ':')) {
                 $parts = explode(':', $line);
             }
         }

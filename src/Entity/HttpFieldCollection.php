@@ -9,17 +9,13 @@ use BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection;
 
 class HttpFieldCollection
 {
-    /** @var HttpField[] */
-    protected $httpFields;
-
     /**
      * HttpFieldCollection constructor.
      *
      * @param HttpField[] $httpFields
      */
-    public function __construct(array $httpFields = [])
+    public function __construct(private array $httpFields = [])
     {
-        $this->httpFields = [];
         foreach ($httpFields as $httpField) {
             $this->httpFields[$httpField->getName()] = $httpField;
         }
@@ -40,18 +36,14 @@ class HttpFieldCollection
         $this->httpFields[$obj->getName()] = $obj;
     }
 
-    /**
-     * @throws HttpFieldNotFoundOnCollection
-     */
+    /** @throws HttpFieldNotFoundOnCollection */
     public function delete(string $key): void
     {
         $this->checkKeyExists($key);
         unset($this->httpFields[$key]);
     }
 
-    /**
-     * @throws HttpFieldNotFoundOnCollection
-     */
+    /** @throws HttpFieldNotFoundOnCollection */
     public function get(string $key): HttpField|array
     {
         $this->checkKeyExists($key);
@@ -64,10 +56,8 @@ class HttpFieldCollection
         return new self($httpFields);
     }
 
-    /**
-     * @throws HttpFieldNotFoundOnCollection
-     */
-    private function checkKeyExists($key): void
+    /** @throws HttpFieldNotFoundOnCollection */
+    private function checkKeyExists(string $key): void
     {
         if (!array_key_exists($key, $this->httpFields)) {
             throw new  HttpFieldNotFoundOnCollection('Field ' . $key . ' not found');

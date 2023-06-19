@@ -10,15 +10,11 @@ namespace BFunky\HttpParser\Entity;
 
 class HttpField
 {
-    /** @var string */
-    protected $name;
+    protected string $name;
 
-    /** @var string */
-    protected $value;
+    protected string $value;
 
-    /**
-     * HttpHeaderField constructor.
-     */
+    /** HttpHeaderField constructor. */
     public function __construct(string $name, string $value)
     {
         $this->name = $name;

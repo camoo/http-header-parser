@@ -10,23 +10,9 @@ namespace BFunky\HttpParser\Entity;
 
 class HttpRequestHeader implements HttpHeaderInterface
 {
-    /** @var string */
-    protected $method;
-
-    /** @var string */
-    protected $path;
-
-    /** @var string */
-    protected $protocol;
-
-    /**
-     * HttpRequestHeader constructor.
-     */
-    public function __construct(string $method, string $path, string $protocol)
+    /** HttpRequestHeader constructor. */
+    public function __construct(protected string $method, protected string $path, protected string $protocol)
     {
-        $this->method = $method;
-        $this->path = $path;
-        $this->protocol = $protocol;
     }
 
     public function getMethod(): string
