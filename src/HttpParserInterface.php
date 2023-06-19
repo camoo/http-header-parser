@@ -10,5 +10,5 @@ namespace BFunky\HttpParser;
 
 interface HttpParserInterface
 {
-    public function parse(string $rawHttpHeader): void;
+    public function parse(string $rawHttpHeaderHeader): void;
 }
