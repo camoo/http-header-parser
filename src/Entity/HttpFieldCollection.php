@@ -16,8 +16,9 @@ class HttpFieldCollection
      */
     public function __construct(private array $httpFields = [])
     {
-        foreach ($httpFields as $httpField) {
+        foreach ($this->httpFields as $index => $httpField) {
             $this->httpFields[$httpField->getName()] = $httpField;
+            unset($this->httpFields[$index]);
         }
     }
 
@@ -34,6 +35,12 @@ class HttpFieldCollection
             return;
         }
         $this->httpFields[$obj->getName()] = $obj;
+    }
+
+    /** @return array<HttpField> */
+    public function getHttpFields(): array
+    {
+        return $this->httpFields;
     }
 
     /** @throws HttpFieldNotFoundOnCollection */
