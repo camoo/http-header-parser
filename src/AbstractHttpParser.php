@@ -20,11 +20,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
 
     protected HttpFieldCollection $httpFieldCollection;
 
-    /**
-     * HttpParser constructor.
-     *
-     * @param HttpFieldCollection $httpFieldCollection
-     */
+    /** HttpParser constructor. */
     public function __construct(?HttpFieldCollection $httpFieldCollection = null)
     {
         $this->httpFieldCollection = $httpFieldCollection ?? HttpFieldCollection::fromHttpFieldArray([]);
@@ -68,7 +64,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
     protected function extract(): void
     {
         $headers = explode("\n", $this->httpRaw);
-        foreach ($headers as $i => $headerLine) {
+        foreach ($headers as $headerLine) {
             if (trim($headerLine) === '') {
                 continue;
             }

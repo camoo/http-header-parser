@@ -10,23 +10,9 @@ namespace BFunky\HttpParser\Entity;
 
 class HttpResponseHeader implements HttpHeaderInterface
 {
-    /** @var string */
-    protected $protocol;
-
-    /** @var string */
-    protected $code;
-
-    /** @var string */
-    protected $message;
-
-    /**
-     * HttpResponseHeader constructor.
-     */
-    public function __construct(string $protocol, string $code, string $message)
+    /** HttpResponseHeader constructor. */
+    public function __construct(private string $protocol, private string $code, private string $message)
     {
-        $this->protocol = $protocol;
-        $this->code = $code;
-        $this->message = $message;
     }
 
     public function getProtocol(): string
@@ -34,7 +20,7 @@ class HttpResponseHeader implements HttpHeaderInterface
         return $this->protocol;
     }
 
-    public function setProtocol(string $protocol): HttpResponseHeader
+    public function setProtocol(string $protocol): self
     {
         $this->protocol = $protocol;
 
@@ -46,7 +32,7 @@ class HttpResponseHeader implements HttpHeaderInterface
         return $this->code;
     }
 
-    public function setCode(string $code): HttpResponseHeader
+    public function setCode(string $code): self
     {
         $this->code = $code;
 
@@ -58,7 +44,7 @@ class HttpResponseHeader implements HttpHeaderInterface
         return $this->message;
     }
 
-    public function setMessage(string $message): HttpResponseHeader
+    public function setMessage(string $message): self
     {
         $this->message = $message;
 

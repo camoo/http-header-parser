@@ -8,7 +8,10 @@
 
 namespace BFunky\HttpParser;
 
+use BFunky\HttpParser\Exception\HttpParserBadFormatException;
+
 interface HttpParserInterface
 {
-    public function parse(string $rawHttpHeaderHeader): void;
+    /** @throws HttpParserBadFormatException */
+    public function parse(string $rawHttpHeader): void;
 }
