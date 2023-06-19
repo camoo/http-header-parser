@@ -58,4 +58,13 @@ class HttpFieldCollectionTest extends TestCase
         $collection = new HttpFieldCollection();
         $collection->delete('key');
     }
+
+    public function testCanGetFields(): void
+    {
+        $field = HttpField::fromKeyAndValue('key', 'value');
+        //var_dump($field);
+        $collection = new HttpFieldCollection([$field]);
+        //var_dump($collection->getHttpFields());
+        $this->assertCount(1, $collection->getHttpFields());
+    }
 }
