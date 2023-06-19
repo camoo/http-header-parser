@@ -38,16 +38,14 @@ abstract class AbstractHttpParser implements HttpParserInterface
         $this->process($rawHttp);
     }
 
-    /**
-     * @throws HttpFieldNotFoundOnCollection
-     */
+    /** @throws HttpFieldNotFoundOnCollection */
     public function get(string $headerFieldName): string
     {
         $httpField = $this->httpFieldCollection->get($headerFieldName);
         if (is_array($httpField)) {
             $values = array_map(fn (HttpField $line): string => trim($line->getValue()), $httpField);
 
-            return implode('__header__', $values);
+            return implode("\n", $values);
         }
 
         return $httpField->getValue();
@@ -58,9 +56,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
         return $this->httpHeader;
     }
 
-    /**
-     * @throws HttpParserBadFormatException
-     */
+    /** @throws HttpParserBadFormatException */
     protected function process(string $rawHttp): void
     {
         $this->setHttpRaw($rawHttp);
@@ -87,9 +83,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
         }
     }
 
-    /**
-     * @throws HttpParserBadFormatException
-     */
+    /** @throws HttpParserBadFormatException */
     protected function addHeader(string $headerLine): void
     {
         $data = preg_split('/ /', $headerLine);
