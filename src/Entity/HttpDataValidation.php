@@ -29,4 +29,14 @@ class HttpDataValidation
             throw new HttpParserBadFormatException();
         }
     }
+
+    /**
+     * @throws HttpParserBadFormatException
+     */
+    public static function checkResponseHeaderOrRaiseError(string $protocol, string $code): void
+    {
+        if (empty($protocol) || empty($code) || !str_starts_with(strtoupper($protocol), 'HTTP/') || !is_numeric($code)) {
+            throw new HttpParserBadFormatException();
+        }
+    }
 }

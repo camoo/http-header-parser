@@ -90,4 +90,24 @@ RAW;
         $this->assertSame('Content-Type', $fields['content-type']->getName());
         $this->assertSame('application/json', $fields['content-type']->getValue());
     }
+
+    public function testAllowsEmptyReasonPhrase(): void
+    {
+        $parser = new HttpResponseParser();
+        $parser->parse("HTTP/1.1 204\r\nContent-Type: text/plain\r\n\r\n");
+
+        $this->assertSame('204', $parser->getHeader()->getCode());
+        $this->assertSame('', $parser->getHeader()->getMessage());
+        $this->assertSame('HTTP/1.1', $parser->getHeader()->getProtocol());
+    }
+
+    public function testAllowsHttp2StatusLineWithoutReasonPhrase(): void
+    {
+        $parser = new HttpResponseParser();
+        $parser->parse("HTTP/2 200\r\ncontent-type: application/json\r\n\r\n");
+
+        $this->assertSame('200', $parser->getHeader()->getCode());
+        $this->assertSame('', $parser->getHeader()->getMessage());
+        $this->assertSame('HTTP/2', $parser->getHeader()->getProtocol());
+    }
 }
