@@ -37,4 +37,22 @@ class HttpDataValidationTest extends TestCase
         $return = HttpDataValidation::checkHeaderOrRaiseError('POST', '/path', 'HTTP/1.1');
         $this->assertNull($return);
     }
+
+    public function testCheckResponseHeaderOrRaiseErrorWithValidHeaders()
+    {
+        $this->assertNull(HttpDataValidation::checkResponseHeaderOrRaiseError('HTTP/1.1', '200'));
+        $this->assertNull(HttpDataValidation::checkResponseHeaderOrRaiseError('HTTP/2', '204'));
+    }
+
+    public function testCheckResponseHeaderOrRaiseErrorWithInvalidProtocol()
+    {
+        $this->expectException(HttpParserBadFormatException::class);
+        HttpDataValidation::checkResponseHeaderOrRaiseError('POST', '200');
+    }
+
+    public function testCheckResponseHeaderOrRaiseErrorWithNonNumericCode()
+    {
+        $this->expectException(HttpParserBadFormatException::class);
+        HttpDataValidation::checkResponseHeaderOrRaiseError('HTTP/1.1', 'OK');
+    }
 }
