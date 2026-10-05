@@ -62,9 +62,29 @@ class HttpFieldCollectionTest extends TestCase
     public function testCanGetFields(): void
     {
         $field = HttpField::fromKeyAndValue('key', 'value');
-        //var_dump($field);
         $collection = new HttpFieldCollection([$field]);
-        //var_dump($collection->getHttpFields());
         $this->assertCount(1, $collection->getHttpFields());
+    }
+
+    public function testFieldNamesAreCaseInsensitive(): void
+    {
+        $collection = new HttpFieldCollection([
+            HttpField::fromKeyAndValue('Content-Type', 'text/plain'),
+        ]);
+
+        $this->assertSame('text/plain', $collection->get('content-type')->getValue());
+        $collection->delete('CONTENT-TYPE');
+        $this->assertCount(0, $collection->getHttpFields());
+    }
+
+    public function testRepeatedFieldNamesWithDifferentCasingAreCombined(): void
+    {
+        $collection = new HttpFieldCollection();
+        $collection->add(HttpField::fromKeyAndValue('Warning', 'one'));
+        $collection->add(HttpField::fromKeyAndValue('warning', 'two'));
+
+        $fields = $collection->get('WARNING');
+        $this->assertIsArray($fields);
+        $this->assertCount(2, $fields);
     }
 }

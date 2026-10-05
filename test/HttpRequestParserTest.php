@@ -58,4 +58,32 @@ User-Agent: PHP-SOAP/\BeSimple\SoapClient
 RAW;
         $parser->parse($raw);
     }
+
+    public function testParsesCrLfHeadersAndValuesContainingColons(): void
+    {
+        $parser = new HttpRequestParser();
+        $parser->parse("GET http://example.test/path HTTP/1.1\r\nLocation:http://example.test/next?a=1:2\r\n\r\n");
+
+        $this->assertSame('http://example.test/next?a=1:2', $parser->get('location'));
+        $this->assertSame('GET', $parser->getHeader()->getMethod());
+        $this->assertSame('http://example.test/path', $parser->getHeader()->getPath());
+    }
+
+    public function testParsingAgainDoesNotRetainFieldsFromPreviousMessage(): void
+    {
+        $parser = new HttpRequestParser();
+        $parser->parse("GET /first HTTP/1.1\nX-First: one\n\n");
+        $parser->parse("GET /second HTTP/1.1\nX-Second: two\n\n");
+
+        $this->assertSame('/second', $parser->getHeader()->getPath());
+        $this->expectException(\BFunky\HttpParser\Exception\HttpFieldNotFoundOnCollection::class);
+        $parser->get('X-First');
+    }
+
+    public function testEmptyInputIsRejected(): void
+    {
+        $this->expectException(HttpParserBadFormatException::class);
+
+        (new HttpRequestParser())->parse("\r\n\r\n");
+    }
 }

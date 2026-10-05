@@ -11,7 +11,13 @@ class HttpDataValidation
 {
     public static function isField(string $httpLine): bool
     {
-        return str_contains($httpLine, ':');
+        $separatorPosition = strpos($httpLine, ':');
+
+        if ($separatorPosition === false || $separatorPosition === 0) {
+            return false;
+        }
+
+        return preg_match("/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/", trim(substr($httpLine, 0, $separatorPosition))) === 1;
     }
 
     /**
