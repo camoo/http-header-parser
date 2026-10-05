@@ -16,7 +16,6 @@ class HttpParserBadFormatException extends AbstractHttpParserException
     /** HttpParserBadFormatException constructor. */
     public function __construct()
     {
-        $this->message = self::MESSAGE;
-        parent::__construct($this->message);
+        parent::__construct(self::MESSAGE);
     }
 }

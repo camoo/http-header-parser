@@ -16,25 +16,37 @@ class HttpFieldCollection
      */
     public function __construct(private array $httpFields = [])
     {
-        foreach ($this->httpFields as $index => $httpField) {
-            $this->httpFields[$httpField->getName()] = $httpField;
-            unset($this->httpFields[$index]);
+        $fields = $this->httpFields;
+        $this->httpFields = [];
+
+        foreach ($fields as $httpField) {
+            if (is_array($httpField)) {
+                foreach ($httpField as $field) {
+                    $this->add($field);
+                }
+
+                continue;
+            }
+
+            $this->add($httpField);
         }
     }
 
     public function add(HttpField $obj): void
     {
-        if (array_key_exists($obj->getName(), $this->httpFields)) {
-            if (!is_array($this->httpFields[$obj->getName()])) {
-                $firstValue = $this->httpFields[$obj->getName()];
-                $this->httpFields[$obj->getName()] = [];
-                $this->httpFields[$obj->getName()][] = $firstValue;
+        $key = $this->normalizeKey($obj->getName());
+
+        if (array_key_exists($key, $this->httpFields)) {
+            if (!is_array($this->httpFields[$key])) {
+                $firstValue = $this->httpFields[$key];
+                $this->httpFields[$key] = [];
+                $this->httpFields[$key][] = $firstValue;
             }
-            $this->httpFields[$obj->getName()][] = $obj;
+            $this->httpFields[$key][] = $obj;
 
             return;
         }
-        $this->httpFields[$obj->getName()] = $obj;
+        $this->httpFields[$key] = $obj;
     }
 
     /** @return array<HttpField> */
@@ -47,7 +59,7 @@ class HttpFieldCollection
     public function delete(string $key): void
     {
         $this->checkKeyExists($key);
-        unset($this->httpFields[$key]);
+        unset($this->httpFields[$this->normalizeKey($key)]);
     }
 
     /** @throws HttpFieldNotFoundOnCollection */
@@ -55,7 +67,7 @@ class HttpFieldCollection
     {
         $this->checkKeyExists($key);
 
-        return $this->httpFields[$key];
+        return $this->httpFields[$this->normalizeKey($key)];
     }
 
     public static function fromHttpFieldArray(array $httpFields): self
@@ -66,8 +78,13 @@ class HttpFieldCollection
     /** @throws HttpFieldNotFoundOnCollection */
     private function checkKeyExists(string $key): void
     {
-        if (!array_key_exists($key, $this->httpFields)) {
+        if (!array_key_exists($this->normalizeKey($key), $this->httpFields)) {
             throw new  HttpFieldNotFoundOnCollection('Field ' . $key . ' not found');
         }
+    }
+
+    private function normalizeKey(string $key): string
+    {
+        return strtolower($key);
     }
 }

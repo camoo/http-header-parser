@@ -68,4 +68,26 @@ User-Agent: PHP-SOAP/\BeSimple\SoapClient
 RAW;
         $parser->parse($raw);
     }
+
+    public function testPreservesTheCompleteReasonPhrase(): void
+    {
+        $parser = new HttpResponseParser();
+        $parser->parse("HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n");
+
+        $this->assertSame('404', $parser->getHeader()->getCode());
+        $this->assertSame('Not Found', $parser->getHeader()->getMessage());
+    }
+
+    public function testExposesTheParsedFieldCollection(): void
+    {
+        $parser = new HttpResponseParser();
+        $parser->parse("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nX-Test: one\r\n\r\n");
+
+        $fields = $parser->getHttpFieldCollection()->getHttpFields();
+
+        $this->assertArrayHasKey('content-type', $fields);
+        $this->assertArrayHasKey('x-test', $fields);
+        $this->assertSame('Content-Type', $fields['content-type']->getName());
+        $this->assertSame('application/json', $fields['content-type']->getValue());
+    }
 }

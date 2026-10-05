@@ -20,14 +20,18 @@ abstract class AbstractHttpParser implements HttpParserInterface
 
     protected HttpFieldCollection $httpFieldCollection;
 
+    private HttpFieldCollection $initialHttpFieldCollection;
+
     /** HttpParser constructor. */
     public function __construct(?HttpFieldCollection $httpFieldCollection = null)
     {
         $this->httpFieldCollection = $httpFieldCollection ?? HttpFieldCollection::fromHttpFieldArray([]);
+        $this->initialHttpFieldCollection = clone $this->httpFieldCollection;
     }
 
     public function parse(string $rawHttpHeader): void
     {
+        $this->httpFieldCollection = clone $this->initialHttpFieldCollection;
         $this->process($rawHttpHeader);
     }
 
@@ -49,6 +53,11 @@ abstract class AbstractHttpParser implements HttpParserInterface
         return $this->httpHeader;
     }
 
+    public function getHttpFieldCollection(): HttpFieldCollection
+    {
+        return clone $this->httpFieldCollection;
+    }
+
     /** @throws HttpParserBadFormatException */
     protected function process(string $rawHttp): void
     {
@@ -63,24 +72,34 @@ abstract class AbstractHttpParser implements HttpParserInterface
      */
     protected function extract(): void
     {
-        $headers = explode("\n", $this->httpRaw);
+        $headers = preg_split('/\r\n|\n|\r/', $this->httpRaw) ?: [];
+        $hasHeader = false;
+
         foreach ($headers as $headerLine) {
             if (trim($headerLine) === '') {
                 continue;
             }
-            if (HttpDataValidation::isField($headerLine)) {
+
+            if (!$hasHeader) {
+                $this->addHeader($headerLine);
+                $hasHeader = true;
+            } elseif (HttpDataValidation::isField($headerLine)) {
                 $this->addField($headerLine);
             } else {
                 $this->addHeader($headerLine);
             }
+        }
+
+        if (!$hasHeader) {
+            throw new HttpParserBadFormatException();
         }
     }
 
     /** @throws HttpParserBadFormatException */
     protected function addHeader(string $headerLine): void
     {
-        $data = explode(' ', $headerLine);
-        $data = array_merge($data, ['', '', '']);
+        $data = preg_split('/[ \t]+/', trim($headerLine), 3) ?: [];
+        $data = array_pad($data, 3, '');
         HttpDataValidation::checkHeaderOrRaiseError($data[0], $data[1], $data[2]);
         $this->setHttpHeader($data[0], $data[1], $data[2]);
     }
@@ -95,16 +114,7 @@ abstract class AbstractHttpParser implements HttpParserInterface
 
     protected function splitRawLine(string $line): array
     {
-        $parts = [];
-        if (str_contains($line, ': ')) {
-            $parts = explode(': ', $line);
-        } else {
-            if (str_contains($line, ':')) {
-                $parts = explode(':', $line);
-            }
-        }
-
-        return $parts;
+        return array_map('trim', explode(':', $line, 2));
     }
 
     protected function setHttpRaw(string $httpRaw): HttpParserInterface
